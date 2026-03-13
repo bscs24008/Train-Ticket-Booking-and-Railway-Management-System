@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+</head>
+
+<body>
+    <h2>Passenger Registration</h2>
+    <form method="POST" action="/register">
+        <label>Name:</label><br>
+        <input type="text" name="name" required><br><br>
+
+        <label>CNIC:</label><br>
+        <input type="text" name="cnic" maxlength="13" required><br><br>
+
+        <label>Email:</label><br>
+        <input type="email" name="email" required><br><br>
+
+        <label>Phone Number:</label><br>
+        <input type="text" name="phone_number" maxlength="11" required><br><br>
+
+        <label>Password:</label><br>
+        <input type="password" name="password" required><br><br>
+
+        <button type="submit">Register</button>
+    </form>
+</body>
+
+</html>

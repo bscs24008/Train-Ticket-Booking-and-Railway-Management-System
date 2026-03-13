@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Passenger Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        h2 {
+            margin-bottom: 30px;
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            width: 200px;
+        }
+
+        .button-container a {
+            text-decoration: none;
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px;
+            margin-bottom: 15px;
+            text-align: center;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .button-container a:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Welcome Passenger {{ user_id }}!</h2>
+    <div class="button-container">
+        <a href="/book">Book Ticket</a>
+        <a href="/my_tickets">My Tickets</a>
+        <a href="/logout">Logout</a>
+    </div>
+</body>
+
+</html>
