@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>My Tickets</title>
+</head>
+
+<body>
+    <h2>My Booked Tickets</h2>
+    {% if tickets %}
+    <table border="1" cellpadding="5">
+        <tr>
+            <th>Ticket ID</th>
+            <th>Train Name</th>
+            <th>Seat Class</th>
+            <th>Travel Date</th>
+            <th>Payment Amount</th>
+        </tr>
+        {% for ticket in tickets %}
+        <tr>
+            <td>{{ ticket['ticket_id'] }}</td>
+            <td>{{ ticket['train_name'] }}</td>
+            <td>{{ ticket['seat_class'] }}</td>
+            <td>{{ ticket['travel_date'] }}</td>
+            <td>{{ ticket['payment_amount'] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>You have no tickets booked yet.</p>
+    {% endif %}
+</body>
+
+</html>

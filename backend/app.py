@@ -4,6 +4,7 @@ import jwt
 import datetime
 from functools import wraps
 import bcrypt
+from datetime import datetime, date
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "supersecretkey"
@@ -121,19 +122,18 @@ def login():
 
     db = get_db()
     cursor = db.cursor()
-
     cursor.execute("SELECT * FROM User WHERE cnic = ?", (cnic,))
     user = cursor.fetchone()
 
     if not user:
         return "User not found", 404
 
-    stored_hash = user["password"].encode("utf-8")
+    stored_hash = user["password"]  # already bytes
 
     if not bcrypt.checkpw(password.encode("utf-8"), stored_hash):
         return "Invalid password", 401
 
-    # Create JWT
+    # Generate JWT
     token = jwt.encode(
         {
             "id": user["id"],
@@ -144,20 +144,15 @@ def login():
         algorithm="HS256",
     )
 
-    response = None
-
     # Redirect depending on role
     if user["role"] == "passenger":
         response = redirect(url_for("passenger_dashboard"))
-
     elif user["role"] == "staff":
         response = redirect(url_for("staff_dashboard"))
-
     else:
         return "Invalid role", 403
 
     response.set_cookie("token", token, httponly=True)
-
     return response
 
 
@@ -204,12 +199,10 @@ def book():
     cursor = db.cursor()
 
     if request.method == "GET":
-        # For now, we can fetch list of trains, routes, etc.
         cursor.execute("SELECT id, name FROM Train")
         trains = cursor.fetchall()
         return render_template("book.html", trains=trains)
 
-    # POST method — user submits booking
     train_id = request.form.get("train_id")
     seat_class = request.form.get("seat_class")
     travel_date = request.form.get("travel_date")
@@ -217,32 +210,74 @@ def book():
     if not all([train_id, seat_class, travel_date]):
         return "All fields are required", 400
 
+    # ---------- Date validation ----------
     try:
-        cursor.execute("BEGIN TRANSACTION;")
+        travel_date_obj = datetime.strptime(travel_date, "%Y-%m-%d").date()
+        if travel_date_obj < date.today():
+            return "Travel date cannot be before today", 400
+    except ValueError:
+        return "Invalid date format", 400
 
-        # Find a free seat of requested class
+    try:
+        cursor.execute("BEGIN TRANSACTION")
+
+        # ---------- Find free seat ----------
         cursor.execute(
             "SELECT id FROM Seat WHERE train_id=? AND class=? AND status='Free' LIMIT 1",
             (train_id, seat_class),
         )
         seat = cursor.fetchone()
+
         if not seat:
             db.rollback()
-            return "No available seats in this class for selected train", 409
+            return "No seats available in this class", 409
 
         seat_id = seat["id"]
 
-        # Insert ticket
+        # ---------- Generate Ticket ID ----------
+        cursor.execute("SELECT MAX(id) as max_id FROM Ticket")
+        row = cursor.fetchone()
+        ticket_id = 1 if row["max_id"] is None else row["max_id"] + 1
+
+        # ---------- Generate Payment ID ----------
+        cursor.execute("SELECT MAX(id) as max_id FROM Payment")
+        row = cursor.fetchone()
+        payment_id = 1 if row["max_id"] is None else row["max_id"] + 1
+
+        # ---------- Payment Amount ----------
+        if seat_class == "Economy":
+            amount = 2000
+        elif seat_class == "Business":
+            amount = 3500
+        else:
+            amount = 5000
+
+        # ---------- Insert Payment ----------
         cursor.execute(
-            "INSERT INTO Ticket (train_id, passenger_id, seat_id, travel_date) VALUES (?, ?, ?, ?)",
-            (train_id, g.user["id"], seat_id, travel_date),
+            "INSERT INTO Payment (id, ticket_id, amount) VALUES (?, ?, ?)",
+            (payment_id, ticket_id, amount),
         )
 
-        # Mark seat as occupied
+        # ---------- Insert Ticket ----------
+        cursor.execute(
+            """INSERT INTO Ticket 
+            (id, train_id, passenger_id, seat_id, payment_id, travel_date)
+            VALUES (?, ?, ?, ?, ?, ?)""",
+            (ticket_id, train_id, g.user["id"], seat_id, payment_id, travel_date),
+        )
+
+        # ---------- Update Seat ----------
         cursor.execute("UPDATE Seat SET status='Occupied' WHERE id=?", (seat_id,))
 
         db.commit()
-        return "Ticket booked successfully!"
+
+        return f"""
+        Ticket booked successfully!<br>
+        Ticket ID: {ticket_id}<br>
+        Payment ID: {payment_id}<br>
+        Amount Paid: {amount}
+        """
+
     except Exception as e:
         db.rollback()
         return f"Booking failed: {str(e)}", 500
