@@ -10,7 +10,6 @@
     <h2>Book a Ticket</h2>
 
     <form method="POST" action="/book">
-        <!-- Select Train -->
         <label for="train">Select Train:</label><br>
         <select name="train_id" id="train" required>
             {% for train in trains %}
@@ -18,7 +17,6 @@
             {% endfor %}
         </select><br><br>
 
-        <!-- Select Class -->
         <label for="seat_class">Select Class:</label><br>
         <select name="seat_class" id="seat_class" required>
             <option value="Economy">Economy</option>
@@ -26,7 +24,6 @@
             <option value="AC">AC</option>
         </select><br><br>
 
-        <!-- Travel Date -->
         <label for="travel_date">Travel Date:</label><br>
         <input type="date" name="travel_date" id="travel_date" required><br><br>
 
