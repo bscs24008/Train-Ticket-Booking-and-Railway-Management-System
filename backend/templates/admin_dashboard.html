@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f4f6f9;
+            color: #1a1a2e;
+            min-height: 100vh
+        }
+
+        .topbar {
+            background: #1a1a2e;
+            color: #fff;
+            padding: 14px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100
+        }
+
+        .topbar h1 {
+            font-size: 17px;
+            font-weight: 700;
+            letter-spacing: .2px
+        }
+
+        .topbar-nav {
+            display: flex;
+            gap: 6px
+        }
+
+        .topbar-nav a {
+            color: #a0aec0;
+            font-size: 12px;
+            text-decoration: none;
+            padding: 5px 13px;
+            border: 1px solid #2d3748;
+            border-radius: 6px;
+            transition: .15s
+        }
+
+        .topbar-nav a:hover {
+            background: #2d3748;
+            color: #fff
+        }
+
+        .main {
+            max-width: 1200px;
+            margin: 28px auto;
+            padding: 0 24px
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 14px;
+            margin-bottom: 28px
+        }
+
+        .metric-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 18px 20px;
+            border: 1px solid #e2e8f0
+        }
+
+        .metric-label {
+            font-size: 11px;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            margin-bottom: 6px
+        }
+
+        .metric-val {
+            font-size: 26px;
+            font-weight: 700;
+            color: #1a1a2e
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            padding: 22px
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1a1a2e
+        }
+
+        .card-subtitle {
+            font-size: 12px;
+            color: #718096;
+            margin-top: -10px;
+            margin-bottom: 14px
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px
+        }
+
+        label {
+            font-size: 12px;
+            color: #718096;
+            display: block;
+            margin-bottom: 4px;
+            margin-top: 12px
+        }
+
+        label:first-of-type {
+            margin-top: 0
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 8px 11px;
+            border: 1px solid #cbd5e0;
+            border-radius: 7px;
+            font-size: 13px;
+            color: #1a1a2e;
+            background: #fff;
+            transition: .15s
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, .1)
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            margin-top: 16px;
+            padding: 9px 20px;
+            background: #1a1a2e;
+            color: #fff;
+            border: none;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: .15s
+        }
+
+        .btn:hover {
+            background: #2d3748
+        }
+
+        .btn-warning {
+            background: #744210;
+            color: #fff
+        }
+
+        .btn-warning:hover {
+            background: #92400e
+        }
+
+        .alert {
+            padding: 10px 14px;
+            border-radius: 7px;
+            font-size: 13px;
+            margin-bottom: 16px
+        }
+
+        .alert-success {
+            background: #f0fff4;
+            color: #276749;
+            border: 1px solid #9ae6b4
+        }
+
+        .alert-error {
+            background: #fff5f5;
+            color: #c53030;
+            border: 1px solid #fed7d7
+        }
+
+        .table-wrap {
+            overflow-x: auto
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px
+        }
+
+        th {
+            text-align: left;
+            padding: 9px 12px;
+            color: #718096;
+            font-weight: 600;
+            border-bottom: 2px solid #e2e8f0;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            white-space: nowrap
+        }
+
+        td {
+            padding: 9px 12px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #1a1a2e;
+            vertical-align: middle
+        }
+
+        tr:last-child td {
+            border-bottom: none
+        }
+
+        tr:hover td {
+            background: #fafbfc
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600
+        }
+
+        .badge-morning {
+            background: #ebf8ff;
+            color: #2b6cb0
+        }
+
+        .badge-evening {
+            background: #fef3c7;
+            color: #92400e
+        }
+
+        .badge-economy {
+            background: #e6fffa;
+            color: #234e52
+        }
+
+        .badge-business {
+            background: #faf5ff;
+            color: #553c9a
+        }
+
+        .badge-ac {
+            background: #ebf8ff;
+            color: #2c5282
+        }
+
+        .bar-wrap {
+            margin-bottom: 7px
+        }
+
+        .bar-label-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #718096;
+            margin-bottom: 3px
+        }
+
+        .bar-track {
+            height: 5px;
+            background: #edf2f7;
+            border-radius: 3px;
+            overflow: hidden
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            background: #667eea
+        }
+
+        .empty {
+            text-align: center;
+            padding: 20px;
+            color: #a0aec0;
+            font-size: 13px
+        }
+
+        .tabs {
+            display: flex;
+            gap: 2px;
+            background: #edf2f7;
+            padding: 3px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            width: fit-content
+        }
+
+        .tab-btn {
+            padding: 6px 18px;
+            border-radius: 6px;
+            border: none;
+            background: transparent;
+            font-size: 13px;
+            color: #718096;
+            cursor: pointer;
+            font-weight: 500;
+            transition: .15s
+        }
+
+        .tab-btn.active {
+            background: #fff;
+            color: #1a1a2e;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .1)
+        }
+
+        .tab-pane {
+            display: none
+        }
+
+        .tab-pane.active {
+            display: block
+        }
+
+        /* manual shift card accent */
+        .card-accent {
+            border-left: 3px solid #f6ad55
+        }
+
+        /* divider between form sections in the same card */
+        .form-divider {
+            border: none;
+            border-top: 1px solid #f0f0f0;
+            margin: 18px 0 4px
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="topbar">
+        <h1>&#9776;&nbsp; Rail Admin</h1>
+        <div class="topbar-nav">
+            <a href="#" onclick="showTab('staff',this)">Staff</a>
+            <a href="#" onclick="showTab('trains',this)">Trains</a>
+            <a href="#" onclick="showTab('routes',this)">Routes &amp; Stations</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </div>
+
+    <div class="main">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for cat, msg in messages %}
+        <div class="alert alert-{{ cat }}">{{ msg }}</div>
+        {% endfor %}
+        {% endwith %}
+
+        <!-- ═══ METRICS ═══ -->
+        <div class="metrics">
+            <div class="metric-card">
+                <div class="metric-label">Staff</div>
+                <div class="metric-val">{{ metrics.total_staff }}</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Assignments</div>
+                <div class="metric-val">{{ metrics.total_assignments }}</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Stations</div>
+                <div class="metric-val">{{ metrics.total_stations }}</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Trains</div>
+                <div class="metric-val">{{ metrics.total_trains }}</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Routes</div>
+                <div class="metric-val">{{ metrics.total_routes }}</div>
+            </div>
+        </div>
+
+        <!-- ═══ TABS ═══ -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('staff',this)">Staff</button>
+            <button class="tab-btn" onclick="showTab('trains',this)">Trains</button>
+            <button class="tab-btn" onclick="showTab('routes',this)">Routes &amp; Stations</button>
+        </div>
+
+
+        <!-- ══════════════════════════════════════════════════════════ -->
+        <!--  TAB 1 — STAFF                                           -->
+        <!-- ══════════════════════════════════════════════════════════ -->
+        <div id="tab-staff" class="tab-pane active">
+
+            <div class="grid-2" style="margin-bottom:20px">
+
+                <!-- CREATE STAFF -->
+                <div class="card">
+                    <div class="card-title">Create New Staff Member</div>
+                    <form method="POST" action="/admin/create_staff">
+                        <label>Full Name</label>
+                        <input name="name" placeholder="e.g. Ayesha Raza" required />
+
+                        <div class="form-row">
+                            <div>
+                                <label>CNIC</label>
+                                <input name="cnic" placeholder="13 digits" maxlength="13" required />
+                            </div>
+                            <div>
+                                <label>Phone</label>
+                                <input name="phone_number" placeholder="11 digits" maxlength="11" required />
+                            </div>
+                        </div>
+
+                        <label>Email</label>
+                        <input name="email" type="email" placeholder="staff@example.com" required />
+
+                        <label>Password</label>
+                        <input name="password" type="password" placeholder="Min 6 characters" required />
+
+                        <div class="form-row">
+                            <div>
+                                <label>Role</label>
+                                <select name="role">
+                                    <option>Conductor</option>
+                                    <option>Ticket Checker</option>
+                                    <option>Security</option>
+                                    <option>Cleaner</option>
+                                    <option>Station Manager</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>Salary (PKR)</label>
+                                <input name="salary" type="number" min="1" placeholder="e.g. 45000" required />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div>
+                                <label>Shift Start Date</label>
+                                <input name="shift_date" type="date" required />
+                            </div>
+                            <div>
+                                <label>Shift Type</label>
+                                <select name="shift_type">
+                                    <option value="Morning">Morning</option>
+                                    <option value="Evening">Evening</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button class="btn" type="submit">Create &amp; Auto-Assign to 8 Stations</button>
+                    </form>
+                </div>
+
+                <!-- RIGHT COLUMN: station load + manual shift stacked -->
+                <div style="display:flex;flex-direction:column;gap:20px">
+
+                    <!-- STATION LOAD -->
+                    <div class="card">
+                        <div class="card-title">Station Assignment Load</div>
+                        {% for s in station_loads %}
+                        <div class="bar-wrap">
+                            <div class="bar-label-row"><span>{{ s.name }}</span><span>{{ s.count }}</span></div>
+                            <div class="bar-track">
+                                <div class="bar-fill" style="width:{{ s.pct }}%"></div>
+                            </div>
+                        </div>
+                        {% else %}
+                        <p class="empty">No stations yet.</p>
+                        {% endfor %}
+                    </div>
+
+                    <!-- MANUAL SHIFT ASSIGNMENT -->
+                    <div class="card card-accent">
+                        <div class="card-title">Manually Add a Shift</div>
+                        <div class="card-subtitle">Adds a single shift for an existing staff member. Max 8 per week
+                            enforced.</div>
+                        <form method="POST" action="/admin/add_shift">
+
+                            <label>Staff Member</label>
+                            <select name="staff_id" required>
+                                <option value="">— select staff —</option>
+                                {% for s in staff_dropdown %}
+                                <option value="{{ s.id }}">{{ s.name }}</option>
+                                {% endfor %}
+                            </select>
+
+                            <label>Station</label>
+                            <select name="station_id" required>
+                                <option value="">— select station —</option>
+                                {% for s in stations_dropdown %}
+                                <option value="{{ s.id }}">{{ s.name }}</option>
+                                {% endfor %}
+                            </select>
+
+                            <div class="form-row">
+                                <div>
+                                    <label>Shift Date</label>
+                                    <input name="shift_date" type="date" required />
+                                </div>
+                                <div>
+                                    <label>Shift Type</label>
+                                    <select name="shift_type">
+                                        <option value="Morning">Morning</option>
+                                        <option value="Evening">Evening</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-warning" type="submit">Add Shift</button>
+                        </form>
+                    </div>
+
+                </div><!-- /right column -->
+            </div><!-- /grid-2 -->
+
+            <!-- STAFF TABLE -->
+            <div class="card">
+                <div class="card-title">All Staff</div>
+                {% if staff_list %}
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Role</th>
+                                <th>Email</th>
+                                <th>Salary</th>
+                                <th>Last Shift</th>
+                                <th>Total Shifts</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for s in staff_list %}
+                            <tr>
+                                <td><strong>{{ s.name }}</strong></td>
+                                <td>{{ s.role }}</td>
+                                <td>{{ s.email }}</td>
+                                <td>PKR {{ "{:,}".format(s.salary) }}</td>
+                                <td>
+                                    {% if s.shift_type != 'N/A' %}
+                                    <span class="badge badge-{{ s.shift_type|lower }}">{{ s.shift_type }}</span>
+                                    {% else %}
+                                    <span style="color:#a0aec0">—</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ s.assignment_count }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="empty">No staff created yet.</p>
+                {% endif %}
+            </div>
+
+        </div><!-- /tab-staff -->
+
+
+        <!-- ══════════════════════════════════════════════════════════ -->
+        <!--  TAB 2 — TRAINS                                          -->
+        <!-- ══════════════════════════════════════════════════════════ -->
+        <div id="tab-trains" class="tab-pane">
+
+            <div class="grid-2" style="margin-bottom:20px">
+
+                <div class="card">
+                    <div class="card-title">Create New Train</div>
+                    <div class="card-subtitle">30 seats auto-created: 10 Economy, 10 Business, 10 AC — all Free.</div>
+                    <form method="POST" action="/admin/create_train">
+                        <label>Train Name</label>
+                        <input name="train_name" placeholder="e.g. Lahore Express" required />
+                        <button class="btn" type="submit">Create Train + 30 Seats</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Seat Classes &amp; Prices</div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Class</th>
+                                <th>Seats</th>
+                                <th>Price (PKR)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="badge badge-economy">Economy</span></td>
+                                <td>10</td>
+                                <td>2,000</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-business">Business</span></td>
+                                <td>10</td>
+                                <td>3,500</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-ac">AC</span></td>
+                                <td>10</td>
+                                <td>5,000</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <div class="card">
+                <div class="card-title">All Trains</div>
+                {% if trains_list %}
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Economy</th>
+                                <th>Business</th>
+                                <th>AC</th>
+                                <th>Total Seats</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for t in trains_list %}
+                            <tr>
+                                <td style="color:#a0aec0">{{ t.id }}</td>
+                                <td><strong>{{ t.name }}</strong></td>
+                                <td><span class="badge badge-economy">{{ t.economy_seats or 0 }}</span></td>
+                                <td><span class="badge badge-business">{{ t.business_seats or 0 }}</span></td>
+                                <td><span class="badge badge-ac">{{ t.ac_seats or 0 }}</span></td>
+                                <td>{{ t.total_seats or 0 }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="empty">No trains created yet.</p>
+                {% endif %}
+            </div>
+
+        </div><!-- /tab-trains -->
+
+
+        <!-- ══════════════════════════════════════════════════════════ -->
+        <!--  TAB 3 — ROUTES & STATIONS                               -->
+        <!-- ══════════════════════════════════════════════════════════ -->
+        <div id="tab-routes" class="tab-pane">
+
+            <div class="grid-3" style="margin-bottom:20px">
+
+                <!-- create station -->
+                <div class="card">
+                    <div class="card-title">Create Station</div>
+                    <form method="POST" action="/admin/create_station">
+                        <label>Station Name</label>
+                        <input name="station_name" placeholder="e.g. Lahore Junction" required />
+                        <button class="btn" type="submit">Create Station</button>
+                    </form>
+                </div>
+
+                <!-- create route -->
+                <div class="card">
+                    <div class="card-title">Create Route</div>
+                    <form method="POST" action="/admin/create_route">
+                        <label>Route Name</label>
+                        <input name="route_name" placeholder="e.g. Lahore–Karachi" required />
+                        <button class="btn" type="submit">Create Route</button>
+                    </form>
+                </div>
+
+                <!-- add station to route -->
+                <div class="card">
+                    <div class="card-title">Add Station to Route</div>
+                    <form method="POST" action="/admin/add_route_station">
+                        <label>Route</label>
+                        <select name="route_id" required>
+                            <option value="">— select route —</option>
+                            {% for r in routes_dropdown %}
+                            <option value="{{ r.route_id }}">{{ r.route_name }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <label>Station</label>
+                        <select name="station_id" required>
+                            <option value="">— select station —</option>
+                            {% for s in stations_dropdown %}
+                            <option value="{{ s.id }}">{{ s.name }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <div class="form-row" style="margin-top:12px">
+                            <div>
+                                <label>Arrival Time</label>
+                                <input name="arrival_time" type="time" />
+                            </div>
+                            <div>
+                                <label>Departure Time</label>
+                                <input name="departure_time" type="time" />
+                            </div>
+                        </div>
+
+                        <button class="btn" type="submit">Add to Route</button>
+                    </form>
+                </div>
+
+            </div>
+
+            <div class="grid-2">
+
+                <div class="card">
+                    <div class="card-title">All Stations</div>
+                    {% if stations_list %}
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Assignments</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for s in stations_list %}
+                                <tr>
+                                    <td style="color:#a0aec0">{{ s.id }}</td>
+                                    <td><strong>{{ s.name }}</strong></td>
+                                    <td>{{ s.assignment_count }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="empty">No stations created yet.</p>
+                    {% endif %}
+                </div>
+
+                <div class="card">
+                    <div class="card-title">All Routes</div>
+                    {% if routes_list %}
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Route Name</th>
+                                    <th>Stations</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for r in routes_list %}
+                                <tr>
+                                    <td style="color:#a0aec0">{{ r.route_id }}</td>
+                                    <td><strong>{{ r.route_name }}</strong></td>
+                                    <td>{{ r.station_count }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="empty">No routes created yet.</p>
+                    {% endif %}
+                </div>
+
+            </div>
+
+        </div><!-- /tab-routes -->
+
+    </div><!-- /main -->
+
+    <script>
+        function showTab(name, el) {
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + name).classList.add('active');
+            if (el) el.classList.add('active');
+        }
+
+        // Persist active tab across form submissions via ?tab= query param
+        (function () {
+            const params = new URLSearchParams(window.location.search);
+            const tab = params.get('tab');
+            if (tab) {
+                const btn = document.querySelector(`.tab-btn[onclick*="'${tab}'"]`);
+                showTab(tab, btn);
+            }
+        })();
+    </script>
+
+</body>
+
+</html>
